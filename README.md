@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-# CELLAR
-The CELL Adaptive mesh Refinement (CELLAR) application provides cell-based adaptive mesh refinement data structures and execution for parallel computing architectures.
-=======
-# EAP Core
-EAP Core is a C++ project that forms the foundation of cell based AMR for applications.
+
+# CELLAR  -  EAP Core
+CELLAR is a C++ project that forms the foundation of cell based AMR for applications 
 
 It provides the following:
 - AMR Mesh Datastructure
@@ -69,4 +66,4 @@ to change the environment use "spack env deactivate".
 ## Contributing
 Code contributors should read the [Developers Guide](DEVELOPERS.md) prior to
 sending a pull request.
->>>>>>> 93b7fa8 (initial commit)
+
