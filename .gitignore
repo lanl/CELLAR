@@ -1,0 +1,5 @@
+*build*
+.vscode
+.spack-env
+spack/default/spack.lock
+compile_commands.json
