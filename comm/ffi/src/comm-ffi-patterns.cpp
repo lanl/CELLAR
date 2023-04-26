@@ -32,7 +32,6 @@ using eap::local_index_t;
 using eap::comm::ffi::RmaAllToAllGeneric;
 using eap::utility::ffi::FortranLocalAddressSpan;
 using eap::utility::ffi::LocalAddressSpan;
-using nonstd::span;
 
 template <typename Dt>
 using right_unmanged_t =
@@ -136,11 +135,11 @@ EXTERN_C void comm_rma_all_to_all_invoke(comm_rma_all_to_all_t *rma_all_to_all,
 namespace {
 template <typename T>
 void eap_comm_move_t(mpi::Comm &comm,
-                     span<FortranLocalIndex const> send_start,
-                     span<local_index_t const> send_length,
+                     std::span<FortranLocalIndex const> send_start,
+                     std::span<local_index_t const> send_length,
                      StrideUnmanagedView<T const *> send_data,
-                     span<FortranLocalIndex const> recv_start,
-                     span<local_index_t const> recv_length,
+                     std::span<FortranLocalIndex const> recv_start,
+                     std::span<local_index_t const> recv_length,
                      StrideUnmanagedView<T *> recv_data) {
     using eap::utility::MakeLinearView;
 

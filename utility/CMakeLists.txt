@@ -7,7 +7,7 @@ target_link_libraries(
     eap-utility
     PUBLIC
         eap-abi-base eap-error
-        eap-kokkos nonstd::span-lite nonstd::optional-lite)
+        eap-kokkos)
 
 if (EAP_CORE_ENABLE_TESTING)
     add_subdirectory(test)

@@ -159,7 +159,6 @@ EXTERN_C void eap_mesh_cpp_levels_recon_move_f(eap_mesh_cpp_levels_t *levels,
                                                eap_local_t const *send_length,
                                                eap_local_t const *recv_start,
                                                eap_local_t const *recv_length) {
-    using nonstd::span;
 
     EAP_EXTERN_PRE
 

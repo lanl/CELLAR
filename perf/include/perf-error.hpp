@@ -11,8 +11,8 @@
 
 #include "perf-internal-fwd.hpp"
 
-#include <nonstd/optional.hpp>
-#include <nonstd/string_view.hpp>
+#include <optional>
+#include <string_view>
 #include <stdexcept>
 #include <string>
 
@@ -21,9 +21,9 @@ namespace perf {
 class TimerException : public std::logic_error {
   public:
     /** @brief Returns a reference to the timer's name, if it has one */
-    nonstd::optional<nonstd::string_view> timer_name() const {
-        return timer_name_ ? nonstd::make_optional<nonstd::string_view>(timer_name_.value())
-                           : nonstd::nullopt;
+    std::optional<std::string_view> timer_name() const {
+        return timer_name_ ? std::make_optional<std::string_view>(timer_name_.value())
+                           : std::nullopt;
     }
 
   protected:
@@ -40,11 +40,11 @@ class TimerException : public std::logic_error {
      * @param what
      *  The error message associated with the exception.
      */
-    explicit TimerException(nonstd::string_view timer_name, std::string const &what)
+    explicit TimerException(std::string_view timer_name, std::string const &what)
         : logic_error(what), timer_name_(std::string(timer_name)) {}
 
   private:
-    nonstd::optional<std::string> timer_name_;
+    std::optional<std::string> timer_name_;
 };
 
 /**
@@ -56,10 +56,10 @@ class TimerAlreadyRunningException : public TimerException {
     TimerAlreadyRunningException();
 
     /** @brief Instantiates the exception for a timer with a name. */
-    explicit TimerAlreadyRunningException(nonstd::string_view timer_name);
+    explicit TimerAlreadyRunningException(std::string_view timer_name);
 
   private:
-    static std::string get_named_what(nonstd::string_view timer_name);
+    static std::string get_named_what(std::string_view timer_name);
 };
 
 /**
@@ -71,10 +71,10 @@ class TimerNotRunningException : public TimerException {
     TimerNotRunningException();
 
     /** @brief Instantiates the exception for a timer with a name. */
-    explicit TimerNotRunningException(nonstd::string_view timer_name);
+    explicit TimerNotRunningException(std::string_view timer_name);
 
   private:
-    static std::string get_named_what(nonstd::string_view timer_name);
+    static std::string get_named_what(std::string_view timer_name);
 };
 
 } // namespace perf

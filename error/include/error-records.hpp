@@ -18,8 +18,8 @@
 #include <string>
 
 // Third Party includes
-#include <nonstd/optional.hpp>
-#include <nonstd/string_view.hpp>
+#include <optional>
+#include <string_view>
 
 namespace eap {
 namespace error {
@@ -28,8 +28,8 @@ namespace error {
  */
 struct Location {
     // Strings are stored in global memory
-    nonstd::string_view file;
-    nonstd::string_view func;
+    std::string_view file;
+    std::string_view func;
     size_t line;
 };
 
@@ -88,7 +88,7 @@ class PropagatedError : public eap::error::Error {
     template <typename T>
     PropagatedError(::eap::error::Location const &location,
                     T const &exception,
-                    nonstd::optional<nonstd::string_view> statement,
+                    std::optional<std::string_view> statement,
                     std::string &&msg)
         : Error(location),
           exception_(std::make_shared<T>(exception)),
@@ -97,7 +97,7 @@ class PropagatedError : public eap::error::Error {
 
     // Accessors
     char const *what() const noexcept final;
-    nonstd::string_view msg() const noexcept { return msg_; }
+    std::string_view msg() const noexcept { return msg_; }
     std::exception const *exception() const { return exception_.get(); }
 
     // Methods
@@ -106,10 +106,10 @@ class PropagatedError : public eap::error::Error {
   private:
     // This must be a shared_ptr to make the exception copyable, as is required.
     std::shared_ptr<std::exception> exception_;
-    nonstd::optional<std::string> what_;
+    std::optional<std::string> what_;
     std::string msg_;
     // stored in global memory - string literal
-    nonstd::optional<nonstd::string_view> statement_;
+    std::optional<std::string_view> statement_;
 };
 
 namespace internal {
@@ -122,7 +122,7 @@ namespace internal {
  * @param message
  */
 [[noreturn]] void PropagateException(::eap::error::Location const &location,
-                                     nonstd::optional<nonstd::string_view> statement,
+                                     std::optional<std::string_view> statement,
                                      std::string &&message);
 
 [[noreturn]] void AbortWithException(::eap::error::Location const &location) noexcept;

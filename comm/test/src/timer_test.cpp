@@ -15,9 +15,9 @@ TEST(Timer, CheckTimer) {
 
     builder.SetNumCells(0);
 
-    builder.BuildLocal(nonstd::span<FortranLocalIndex>(),
-                       nonstd::span<NonNegativeInteger<int>>(),
-                       nonstd::span<OptionalFortranLocalIndex>());
+    builder.BuildLocal(std::span<FortranLocalIndex>(),
+                       std::span<NonNegativeInteger<int>>(),
+                       std::span<OptionalFortranLocalIndex>());
 
     auto token =
         builder.BuildGlobal(vector<FortranLocalIndex>{}, vector<OptionalFortranGlobalIndex>{});
@@ -35,16 +35,16 @@ TEST(Timer, CheckTimer) {
     token.PutVInv(eap::comm::TokenOperation::Copy,
                   View<char **, eap::HostMemorySpace>("PutVInv timer test", 0, 0));
 
-    constexpr nonstd::string_view expected_timers[] = {
-        nonstd::string_view{"eap::comm::TokenBuilder::BuildGlobal"},
-        nonstd::string_view{"eap::comm::TokenBuilder::BuildLocal"},
-        nonstd::string_view{"eap::comm::Token::Get<std::int32_t>"},
-        nonstd::string_view{"eap::comm::Token::Get<double>"},
-        nonstd::string_view{"eap::comm::Token::GetV<T>"},
-        nonstd::string_view{"eap::comm::Token::GetVInv<std::int64_t>"},
-        nonstd::string_view{"eap::comm::Token::Put<float>"},
-        nonstd::string_view{"eap::comm::Token::PutV<char>"},
-        nonstd::string_view{"eap::comm::Token::PutVInv<char>"}};
+    constexpr std::string_view expected_timers[] = {
+        std::string_view{"eap::comm::TokenBuilder::BuildGlobal"},
+        std::string_view{"eap::comm::TokenBuilder::BuildLocal"},
+        std::string_view{"eap::comm::Token::Get<std::int32_t>"},
+        std::string_view{"eap::comm::Token::Get<double>"},
+        std::string_view{"eap::comm::Token::GetV<T>"},
+        std::string_view{"eap::comm::Token::GetVInv<std::int64_t>"},
+        std::string_view{"eap::comm::Token::Put<float>"},
+        std::string_view{"eap::comm::Token::PutV<char>"},
+        std::string_view{"eap::comm::Token::PutVInv<char>"}};
 
     for (auto const expected : expected_timers) {
         auto const &timer = eap::comm::GetTimerRegistry()->GetTimer(

@@ -61,9 +61,9 @@ struct CopyFromTo {
     std::vector<std::size_t> zero;
 };
 CopyFromTo BuildCopyInfo(mpi::rank_t mype,
-                         nonstd::span<FortranLocalIndex const> home_addresses,
-                         nonstd::span<utility::NonNegativeInteger<mpi::rank_t> const> away_pe,
-                         nonstd::span<OptionalFortranLocalIndex const> away_address);
+                         std::span<FortranLocalIndex const> home_addresses,
+                         std::span<utility::NonNegativeInteger<mpi::rank_t> const> away_pe,
+                         std::span<OptionalFortranLocalIndex const> away_address);
 
 struct Segment {
     mpi::rank_t rank;
@@ -136,10 +136,10 @@ class Token {
 
     size_t GetHomeSize() const { return home_index_.size(); }
 
-    void FillHomeArrays(nonstd::span<mpi::rank_t> ranks,
-                        nonstd::span<eap::utility::FortranIndex<local_index_t>> los,
-                        nonstd::span<local_index_t> lengths,
-                        nonstd::span<eap::utility::FortranIndex<local_index_t>> indices) const;
+    void FillHomeArrays(std::span<mpi::rank_t> ranks,
+                        std::span<eap::utility::FortranIndex<local_index_t>> los,
+                        std::span<local_index_t> lengths,
+                        std::span<eap::utility::FortranIndex<local_index_t>> indices) const;
 
     /**
      * @brief Collective operation. Exchanges data according to token neighbor data, receiving the
@@ -1193,7 +1193,7 @@ class TokenBuilder {
      *  Base address for each rank. Must be the same array on every rank. Must be the same size as
      *  `comm_.size()`.
      */
-    void SetCellBases(nonstd::span<uint64_t const> bases);
+    void SetCellBases(std::span<uint64_t const> bases);
 
     /**
      * @brief Not collective. Set the RmaAllToAll communication pattern instantiation to use for
@@ -1313,9 +1313,9 @@ class TokenBuilder {
      *  (Out) An array of local addresses, where addresses[i] is the local address for
      *  away_globals[i].
      */
-    void PesAndAddresses(nonstd::span<OptionalFortranGlobalIndex const> away_globals,
-                         nonstd::span<utility::NonNegativeInteger<mpi::rank_t>> pes,
-                         nonstd::span<OptionalFortranLocalIndex> addresses) const;
+    void PesAndAddresses(std::span<OptionalFortranGlobalIndex const> away_globals,
+                         std::span<utility::NonNegativeInteger<mpi::rank_t>> pes,
+                         std::span<OptionalFortranLocalIndex> addresses) const;
 
     /**
      * @brief Not collective. Does not modify the TokenBuilder object. Uses the value from
@@ -1331,7 +1331,7 @@ class TokenBuilder {
      *  (Out) An array of local addresses, where addresses[i] is the local address for
      *  away_globals[i]. addresses will be resized to away_globals_length.
      */
-    void PesAndAddresses(nonstd::span<OptionalFortranGlobalIndex const> away_globals,
+    void PesAndAddresses(std::span<OptionalFortranGlobalIndex const> away_globals,
                          std::vector<utility::NonNegativeInteger<mpi::rank_t>> &pes,
                          std::vector<OptionalFortranLocalIndex> &addresses) const;
 
@@ -1345,8 +1345,8 @@ class TokenBuilder {
      *  (Out) An array of flags, where, if an address is on rank r, pe_flags[r] == 1. If no address
      *  is on rank r, pe_flags[r] == 0.
      */
-    void FlagPes(nonstd::span<OptionalFortranGlobalIndex const> away_globals,
-                 nonstd::span<int> pe_flags) const;
+    void FlagPes(std::span<OptionalFortranGlobalIndex const> away_globals,
+                 std::span<int> pe_flags) const;
 
     /**
      * @brief Not collective. Does not modify the TokenBuilder object. Returns an array of flags of
@@ -1360,8 +1360,8 @@ class TokenBuilder {
      */
     void FlagPes(std::vector<OptionalFortranGlobalIndex> const &away_globals,
                  std::vector<int> &pe_flags) const {
-        FlagPes(nonstd::span<OptionalFortranGlobalIndex const>(away_globals),
-                nonstd::span<int>(pe_flags));
+        FlagPes(std::span<OptionalFortranGlobalIndex const>(away_globals),
+                std::span<int>(pe_flags));
     }
 
     /**
@@ -1383,8 +1383,8 @@ class TokenBuilder {
      */
     Token BuildGlobal(std::vector<FortranLocalIndex> const &home_addresses,
                       std::vector<OptionalFortranGlobalIndex> const &away_global) {
-        return BuildGlobal(nonstd::span<FortranLocalIndex const>(home_addresses),
-                           nonstd::span<OptionalFortranGlobalIndex const>(away_global));
+        return BuildGlobal(std::span<FortranLocalIndex const>(home_addresses),
+                           std::span<OptionalFortranGlobalIndex const>(away_global));
     }
 
     /**
@@ -1404,8 +1404,8 @@ class TokenBuilder {
      * @return Token
      *  A new Token using the properties in the TokenBuilder.
      */
-    Token BuildGlobal(nonstd::span<FortranLocalIndex const> home_addresses,
-                      nonstd::span<OptionalFortranGlobalIndex const> away_global);
+    Token BuildGlobal(std::span<FortranLocalIndex const> home_addresses,
+                      std::span<OptionalFortranGlobalIndex const> away_global);
 
     /**
      * @brief Collective. Builds a new token that maps remote-local addresses in away_pe and
@@ -1427,9 +1427,9 @@ class TokenBuilder {
      * @return Token
      *  A new Token using the properties in the TokenBuilder.
      */
-    Token BuildLocal(nonstd::span<FortranLocalIndex const> home_addresses,
-                     nonstd::span<utility::NonNegativeInteger<mpi::rank_t> const> away_pe,
-                     nonstd::span<OptionalFortranLocalIndex const> away_address);
+    Token BuildLocal(std::span<FortranLocalIndex const> home_addresses,
+                     std::span<utility::NonNegativeInteger<mpi::rank_t> const> away_pe,
+                     std::span<OptionalFortranLocalIndex const> away_address);
 
   private:
     mpi::Comm comm_;

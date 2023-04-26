@@ -27,7 +27,6 @@ TEST(Patterns, MoveSimple) {
     using eap::local_index_t;
     using eap::comm::Move;
     using mpi::rank_t;
-    using nonstd::span;
 
     auto comm = Comm::world().dup();
 

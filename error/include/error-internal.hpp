@@ -14,7 +14,7 @@
 #include <cstdint>
 
 // Third Party Includes
-#include <nonstd/string_view.hpp>
+#include <string_view>
 
 /**
  * @brief CMake uses full file paths, so this should be set when building using CMake to make the
@@ -32,11 +32,11 @@ constexpr size_t static_string_length(char const (&)[N]) {
     return N - 1;
 }
 
-constexpr nonstd::string_view SourceRoot =
-    nonstd::string_view{EAP_FILE_ROOT, static_string_length(EAP_FILE_ROOT)};
+constexpr std::string_view SourceRoot =
+    std::string_view{EAP_FILE_ROOT, static_string_length(EAP_FILE_ROOT)};
 
-constexpr nonstd::string_view relative_path(nonstd::string_view const &root,
-                                            nonstd::string_view const &path) {
+constexpr std::string_view relative_path(std::string_view const &root,
+                                            std::string_view const &path) {
     if (root.length() > path.length()) {
         return path;
     }
@@ -61,7 +61,7 @@ constexpr nonstd::string_view relative_path(nonstd::string_view const &root,
     return new_path;
 }
 
-constexpr size_t close_brackets(nonstd::string_view const &func) {
+constexpr size_t close_brackets(std::string_view const &func) {
     auto open = func[0];
 
     char close = 0;
@@ -94,7 +94,7 @@ constexpr size_t close_brackets(nonstd::string_view const &func) {
     return i;
 }
 
-constexpr size_t parse_type(nonstd::string_view const &func) {
+constexpr size_t parse_type(std::string_view const &func) {
     size_t i = 0;
 
     while (i < func.length()) {
@@ -119,13 +119,13 @@ constexpr size_t parse_type(nonstd::string_view const &func) {
  *
  * @details
  * By default __PRETTY_FUNCTION__ gives a very verbose output. For example, this function
- * would be `nonstd::string_view eap::internal::trim_pretty_function(nonstd::string_view const &)`.
+ * would be `std::string_view eap::internal::trim_pretty_function(std::string_view const &)`.
  * This trims that down to `eap::internal::trim_pretty_function`.
  *
  * @param func The output of __PRETTY_FUNCTION__
- * @return constexpr nonstd::string_view Trimmed to just the function name
+ * @return constexpr std::string_view Trimmed to just the function name
  */
-constexpr nonstd::string_view trim_pretty_function(nonstd::string_view const &func) {
+constexpr std::string_view trim_pretty_function(std::string_view const &func) {
     size_t i = 0;
 
     i += parse_type(func);

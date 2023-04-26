@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.13)
-project(eap-core VERSION 0.0.1 LANGUAGES CXX)
+project(eap-core VERSION 0.0.1 LANGUAGES C CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED On)
 
 option(
     EAP_CORE_ENABLE_FORTRAN
@@ -39,7 +42,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build." FORCE)
 endif()
 
-# Useful for devlopment environments: produces a compile_commands.json file
+# Useful for development environments: produces a compile_commands.json file
 # that indicates which include paths are needed by each source file in the
 # project.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -121,11 +124,11 @@ find_package(mpi-cpp 0.3.1 REQUIRED)
 if (EAP_CORE_ENABLE_FORTRAN)
     set(MPI_COMPONENTS Fortran)
 endif()
-find_package(MPI 3.0 REQUIRED COMPONENTS ${MPI_COMPONENTS})
+find_package(MPI 3.0 REQUIRED COMPONENTS C ${MPI_COMPONENTS})
 find_package(Kokkos REQUIRED)
-find_package(string_view-lite 1.2 REQUIRED)
-find_package(optional-lite 3.2 REQUIRED)
-find_package(span-lite 0.5 REQUIRED)
+#find_package(string_view-lite 1.2 REQUIRED)
+#find_package(optional-lite 3.2 REQUIRED)
+#find_package(span-lite 0.5 REQUIRED)
 find_package(benchmark QUIET)
 find_package(TotalView QUIET 2018)
 
@@ -234,3 +237,12 @@ if (DOXYGEN_FOUND)
     # Umbrella target for all docs
     add_custom_target(docs DEPENDS docs-cpp docs-ffi docs-fortran)
 endif()
+
+
+# install all files
+install(
+    TARGETS eap-abi-fortran eap-error eap-utility eap-perf eap-comm eap-utility-ffi eap-comm-ffi eap-perf-ffi eap-perf-fortran eap-comm-fortran eap-mesh eap-mesh-ffi eap-mesh-fortran
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	PUBLIC_HEADER DESTINATION include
+)

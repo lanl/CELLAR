@@ -148,7 +148,7 @@ void DefinedZoneResolutionInfo::Push(NewDzn const &dzn_info) {
     if (dzn_info.size) sizes(new_dzn) = *dzn_info.size;
 }
 
-nonstd::optional<local_index_t> eap::mesh::FindDZN(DefinedZoneResolutionInfo const &dzn,
+std::optional<local_index_t> eap::mesh::FindDZN(DefinedZoneResolutionInfo const &dzn,
                                                    std::uint8_t numdim,
                                                    double time,
                                                    Coordinates<double> test) {
@@ -156,7 +156,7 @@ nonstd::optional<local_index_t> eap::mesh::FindDZN(DefinedZoneResolutionInfo con
         dzn, numdim, time, test, [](local_index_t, ZoneOptions const &) { return true; });
 }
 
-nonstd::optional<local_index_t> eap::mesh::SplitDZN(DefinedZoneResolutionInfo const &dzn,
+std::optional<local_index_t> eap::mesh::SplitDZN(DefinedZoneResolutionInfo const &dzn,
                                                     std::uint8_t numdim,
                                                     double time,
                                                     Coordinates<double> test,
@@ -167,7 +167,7 @@ nonstd::optional<local_index_t> eap::mesh::SplitDZN(DefinedZoneResolutionInfo co
         });
 }
 
-nonstd::optional<local_index_t> eap::mesh::SplitDZNFilterKode(DefinedZoneResolutionInfo const &dzn,
+std::optional<local_index_t> eap::mesh::SplitDZNFilterKode(DefinedZoneResolutionInfo const &dzn,
                                                               std::uint8_t numdim,
                                                               double time,
                                                               Kode kode,

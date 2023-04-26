@@ -7,7 +7,7 @@
 
 using namespace std::literals::chrono_literals;
 
-using nonstd::string_view;
+using std::string_view;
 using std::map;
 using std::chrono::steady_clock;
 
@@ -43,9 +43,9 @@ TEST(EAPTimerRegistry, Basic) {
         } else if (name == "b" || name == "c") {
             ASSERT_EQ(0, timer.TimerCount());
             ASSERT_EQ(0s, timer.SumTime());
-            ASSERT_EQ(nonstd::nullopt, timer.AverageTime());
-            ASSERT_EQ(nonstd::nullopt, timer.MinTime());
-            ASSERT_EQ(nonstd::nullopt, timer.MaxTime());
+            ASSERT_EQ(std::nullopt, timer.AverageTime());
+            ASSERT_EQ(std::nullopt, timer.MinTime());
+            ASSERT_EQ(std::nullopt, timer.MaxTime());
         } else {
             ASSERT_TRUE(false);
         }
@@ -79,7 +79,7 @@ TEST(EAPTimerRegistry, UnorderedSectionExit) {
 
     ASSERT_DEATH(
         {
-            nonstd::optional<eap::perf::TimedSection<steady_clock>> second;
+            std::optional<eap::perf::TimedSection<steady_clock>> second;
 
             auto first = registry.TimeSection("first");
             second = registry.TimeSection("second");

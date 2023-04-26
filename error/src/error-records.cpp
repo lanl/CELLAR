@@ -16,7 +16,7 @@
 // Third Party includes
 #include <Kokkos_Core.hpp>
 #include <mpi/mpi.hpp>
-#include <nonstd/optional.hpp>
+#include <optional>
 
 std::ostream &eap::error::operator<<(std::ostream &os, eap::error::Location const &location) {
     os << location.file << ":" << location.line << " (" << location.func << ")";
@@ -26,7 +26,7 @@ std::ostream &eap::error::operator<<(std::ostream &os, eap::error::Location cons
 char const *eap::error::PropagatedError::what() const noexcept {
     if (!what_) {
         // Lazily creates what_
-        auto &what = *const_cast<nonstd::optional<std::string> *>(&what_);
+        auto &what = *const_cast<std::optional<std::string> *>(&what_);
 
         std::stringstream ss;
         ss << "EAP Error:";
@@ -60,7 +60,7 @@ void eap::error::PropagatedError::PrintStackTrace(std::ostream &stream) const no
 }
 
 void eap::error::internal::PropagateException(::eap::error::Location const &location,
-                                              nonstd::optional<nonstd::string_view> statement,
+                                              std::optional<std::string_view> statement,
                                               std::string &&message) {
 #define PROPAGATE_EXCEPTION(exception_type)                                                        \
     catch (exception_type const &err) {                                                            \
@@ -71,7 +71,7 @@ void eap::error::internal::PropagateException(::eap::error::Location const &loca
         throw;
     }
     PROPAGATE_EXCEPTION(mpi::Exception)
-    PROPAGATE_EXCEPTION(nonstd::bad_optional_access)
+    PROPAGATE_EXCEPTION(std::bad_optional_access)
     PROPAGATE_EXCEPTION(eap::error::RaisedError)
     PROPAGATE_EXCEPTION(eap::error::PropagatedError)
     PROPAGATE_EXCEPTION(std::bad_alloc)
@@ -86,7 +86,7 @@ void eap::error::internal::AbortWithException(::eap::error::Location const &loca
     // This function should only be called in a catch(...) block!
     try {
         // Wraps another PropagatedError to get the current file/func/line
-        PropagateException(location, nonstd::nullopt, "Uncaught C++ exception at FFI Boundary");
+        PropagateException(location, std::nullopt, "Uncaught C++ exception at FFI Boundary");
     } catch (eap::error::PropagatedError const &err) {
         std::cerr << "ERROR: Terminating ";
         if (mpi::initialized()) {
@@ -102,7 +102,7 @@ void eap::error::internal::AbortWithException(::eap::error::Location const &loca
     }
 
     if (Kokkos::is_initialized()) {
-        Kokkos::finalize_all();
+        Kokkos::finalize();
     }
 
     if (mpi::initialized()) {

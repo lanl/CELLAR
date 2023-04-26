@@ -18,7 +18,7 @@
 // Third Party Includes
 #include <Kokkos_Macros.hpp>
 #include <mpi/datatype.hpp>
-#include <nonstd/optional.hpp>
+#include <optional>
 
 namespace eap {
 namespace utility {
@@ -242,7 +242,7 @@ class OptionalInteger {
         if (has_value()) {
             return **this;
         } else {
-            throw nonstd::bad_optional_access();
+            throw std::bad_optional_access();
         }
     }
 
@@ -260,7 +260,7 @@ class OptionalInteger {
         if (has_value()) {
             return **this;
         } else {
-            throw nonstd::bad_optional_access();
+            throw std::bad_optional_access();
         }
     }
 
@@ -278,7 +278,7 @@ class OptionalInteger {
         if (has_value()) {
             return **this;
         } else {
-            throw nonstd::bad_optional_access();
+            throw std::bad_optional_access();
         }
     }
 

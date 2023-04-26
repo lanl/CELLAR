@@ -192,10 +192,10 @@ class Levels {
      * indexed.
      */
     void ReconMove(local_index_t data_length,
-                   nonstd::span<FortranLocalIndex const> send_start,
-                   nonstd::span<local_index_t const> send_length,
-                   nonstd::span<FortranLocalIndex const> recv_start,
-                   nonstd::span<local_index_t const> recv_length);
+                   std::span<FortranLocalIndex const> send_start,
+                   std::span<local_index_t const> send_length,
+                   std::span<FortranLocalIndex const> recv_start,
+                   std::span<local_index_t const> recv_length);
 
     /**
      * @brief Re-packs level information after a recon
@@ -755,7 +755,7 @@ class Levels {
         Reconstruction
     };
 
-    static constexpr nonstd::string_view StateString(State state) {
+    static constexpr std::string_view StateString(State state) {
 #define STATE_CASE(state)                                                                          \
     case state:                                                                                    \
         return #state

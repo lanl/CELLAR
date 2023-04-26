@@ -38,7 +38,7 @@ TEST(Cells, Basic) {
         auto all_num_local_cells_unit = MakeLinearView(all_num_local_cells);
 
         std::vector<global_index_t> expected(comm.size(), 0);
-        ASSERT_EQ(nonstd::span<global_index_t const>(expected), all_num_local_cells_unit.Span());
+        ASSERT_EQ(std::span<global_index_t const>(expected), all_num_local_cells_unit.Span());
     }
 
     cells.UpdateGlobalBase();
@@ -53,7 +53,7 @@ TEST(Cells, Basic) {
             expected_num_local_cells[i] = 10 + i;
         }
 
-        ASSERT_EQ(nonstd::span<global_index_t const>(expected_num_local_cells),
+        ASSERT_EQ(std::span<global_index_t const>(expected_num_local_cells),
                   all_num_local_cells_unit.Span());
     }
 
@@ -67,7 +67,7 @@ TEST(Cells, Basic) {
             expected_bases[i] = expected_bases[i - 1] + 10 + (i - 1);
         }
 
-        ASSERT_EQ(nonstd::span<global_index_t const>(expected_bases),
+        ASSERT_EQ(std::span<global_index_t const>(expected_bases),
                   global_base_address_unit.Span());
     }
 

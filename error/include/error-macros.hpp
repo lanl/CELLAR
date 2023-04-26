@@ -16,7 +16,7 @@
 #include <sstream>
 
 // Third Party Includes
-#include <nonstd/string_view.hpp>
+#include <string_view>
 
 // Package includes
 #include "error-internal.hpp"
@@ -47,7 +47,7 @@
 #define EAP_FILE_RELATIVE                                                                          \
     (::eap::error::internal::relative_path(                                                        \
         ::eap::error::internal::SourceRoot,                                                        \
-        nonstd::string_view(__FILE__, ::eap::error::internal::static_string_length(__FILE__))))
+        std::string_view(__FILE__, ::eap::error::internal::static_string_length(__FILE__))))
 
 #if defined(__GNUG__)
 #define EAP_FUNC __PRETTY_FUNCTION__
@@ -56,7 +56,7 @@
 #endif
 
 #define EAP_FUNC_SV                                                                                \
-    (nonstd::string_view(EAP_FUNC, ::eap::error::internal::static_string_length(EAP_FUNC)))
+    (std::string_view(EAP_FUNC, ::eap::error::internal::static_string_length(EAP_FUNC)))
 
 #if defined(__GNUG__)
 #define EAP_PRETTY_FUNC (::eap::error::internal::trim_pretty_function(EAP_FUNC_SV))
@@ -224,21 +224,21 @@
         } catch (...) {                                                                            \
             EAP_ERROR_INTERNAL_SHOULD_NOINLINE                                                     \
             ::eap::error::internal::PropagateException(eap_error_internal_propagate_location,      \
-                                                       ::nonstd::string_view{#expression},         \
+                                                       ::std::string_view{#expression},         \
                                                        EAP_ERROR_EVALUATE_STRING_STREAM(msg));     \
         }                                                                                          \
     })())
 
 /// See: EE_PRELUDE
 #define EAP_ERROR_PRELUDE                                                                          \
-    static EAP_ERROR_CONSTEXPR nonstd::string_view const eap_error_internal_prelude_file =         \
+    static EAP_ERROR_CONSTEXPR std::string_view const eap_error_internal_prelude_file =         \
         EAP_FILE_RELATIVE;                                                                         \
     /*                                                                                             \
         We don't assign the truncated string here because we don't want it to truncate until we    \
         actually use it to avoid wasted cycles when there is no error. This can't always be        \
         constexpr because some platforms don't support constexpr __PRETTY_FUNCTION__/__func__      \
      */                                                                                            \
-    static EAP_ERROR_FUNC_NAME_CONSTEXPR nonstd::string_view const                                 \
+    static EAP_ERROR_FUNC_NAME_CONSTEXPR std::string_view const                                 \
         eap_error_internal_prelude_func = EAP_FUNC_SV;                                             \
     static EAP_ERROR_CONSTEXPR auto const eap_error_internal_prelude_line = __LINE__;              \
     /* It's possible that in some contexts these values aren't used, so mark as unused */          \
@@ -261,7 +261,7 @@
                 ::eap::error::internal::trim_pretty_function(eap_error_internal_prelude_func),     \
                 eap_error_internal_prelude_line};                                                  \
         ::eap::error::internal::PropagateException(                                                \
-            eap_error_internal_post_location, ::nonstd::nullopt, "Routine failed");                \
+            eap_error_internal_post_location, ::std::nullopt, "Routine failed");                \
         std::exit(EXIT_FAILURE); /* HACK: Intel does not recognize the [[noreturn]] attribute */   \
     }
 
@@ -276,7 +276,7 @@
                 eap_error_internal_prelude_line};                                                  \
         EAP_ERROR_INTERNAL_SHOULD_NOINLINE                                                         \
         ::eap::error::internal::PropagateException(eap_error_internal_post_location,               \
-                                                   ::nonstd::nullopt,                              \
+                                                   ::std::nullopt,                              \
                                                    EAP_ERROR_EVALUATE_STRING_STREAM(msg));         \
         std::exit(EXIT_FAILURE); /* HACK: Intel does not recognize the [[noreturn]] attribute */   \
     }
