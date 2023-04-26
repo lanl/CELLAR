@@ -15,8 +15,9 @@
 #include "perf-clock.hpp"
 #include "perf-error.hpp"
 
-#include <nonstd/optional.hpp>
+#include <optional>
 #include <stdexcept>
+#include <cassert>
 
 namespace eap {
 namespace perf {
@@ -64,7 +65,7 @@ class Timer {
 
         auto const time = clock::now() - start_time_.value();
 
-        start_time_ = nonstd::nullopt;
+        start_time_ = std::nullopt;
 
         timer_count_ += 1;
         sum_time_ += time;
@@ -97,28 +98,28 @@ class Timer {
      * @brief Gets the average runtime of the Timer runs.
      *
      * @return Optional std::chrono::duration object. Returns the average run-time if the Timer has
-     *  been run at least once. Otherwise returns nonstd::nullopt.
+     *  been run at least once. Otherwise returns std::nullopt.
      */
-    nonstd::optional<duration> AverageTime() const {
-        return timer_count_ == 0 ? nonstd::nullopt
-                                 : nonstd::make_optional<duration>(sum_time_ / timer_count_);
+    std::optional<duration> AverageTime() const {
+        return timer_count_ == 0 ? std::nullopt
+                                 : std::make_optional<duration>(sum_time_ / timer_count_);
     }
 
     /**
      * @brief Get the longest Timer runtime.
      *
      * @return Optional std::chrono::duration object. Returns the longest run-time if the Timer has
-     *  been run at least once. Otherwise returns nonstd::nullopt.
+     *  been run at least once. Otherwise returns std::nullopt.
      */
-    nonstd::optional<duration> MaxTime() const { return max_time_; }
+    std::optional<duration> MaxTime() const { return max_time_; }
 
     /**
      * @brief Get the shortest Timer runtime
      *
      * @return Optional std::chrono::duration object. Returns the shortest run-time if the Timer has
-     *  been run at least once. Otherwise returns nonstd::nullopt.
+     *  been run at least once. Otherwise returns std::nullopt.
      */
-    nonstd::optional<duration> MinTime() const { return min_time_; }
+    std::optional<duration> MinTime() const { return min_time_; }
 
     /**
      * @brief Returns true if the Timer is running.
@@ -131,10 +132,10 @@ class Timer {
   private:
     std::size_t timer_count_ = 0;
     duration sum_time_{0};
-    nonstd::optional<duration> min_time_;
-    nonstd::optional<duration> max_time_;
+    std::optional<duration> min_time_;
+    std::optional<duration> max_time_;
 
-    nonstd::optional<time_point> start_time_;
+    std::optional<time_point> start_time_;
 };
 
 } // namespace perf

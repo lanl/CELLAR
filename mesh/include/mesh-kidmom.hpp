@@ -15,8 +15,8 @@
 #include <utility>
 
 // Third Party Includes
-#include <nonstd/optional.hpp>
-#include <nonstd/span.hpp>
+#include <optional>
+#include <span>
 
 // Internal Includes
 #include <comm-token.hpp>
@@ -87,10 +87,10 @@ class KidMom {
 
     void ResetMothersAndDaughtersNew(Cells const &cells, local_index_t new_cells);
 
-    void ReconMove(nonstd::span<FortranLocalIndex const> send_start,
-                   nonstd::span<local_index_t const> send_length,
-                   nonstd::span<FortranLocalIndex const> recv_start,
-                   nonstd::span<local_index_t const> recv_length);
+    void ReconMove(std::span<FortranLocalIndex const> send_start,
+                   std::span<local_index_t const> send_length,
+                   std::span<FortranLocalIndex const> recv_start,
+                   std::span<local_index_t const> recv_length);
 
     template <typename InputView,
               typename OutputView,
@@ -137,7 +137,7 @@ class KidMom {
 
     void SyncCellsAtLevelHost();
 
-    nonstd::span<FortranLocalIndex const> CellsAtLevelHost(local_index_t level) const {
+    std::span<FortranLocalIndex const> CellsAtLevelHost(local_index_t level) const {
         EE_PRELUDE
 
         static_assert(
@@ -150,7 +150,7 @@ class KidMom {
         auto lopack = lopack_.view_host();
         auto lpoint = lpoint_.view_host();
 
-        return nonstd::span<FortranLocalIndex const>(&lpoint(lopack(level)),
+        return std::span<FortranLocalIndex const>(&lpoint(lopack(level)),
                                                      &lpoint(lopack(level + 1)));
     }
 

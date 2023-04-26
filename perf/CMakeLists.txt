@@ -14,7 +14,7 @@ target_include_directories(eap-perf PUBLIC include)
 target_link_libraries(
     eap-perf
     PUBLIC
-        nonstd::optional-lite nonstd::string_view-lite eap-utility)
+    eap-utility)
 target_compile_features(eap-perf PUBLIC cxx_std_14)
 
 if (EAP_PERF_ENABLE_TESTING)

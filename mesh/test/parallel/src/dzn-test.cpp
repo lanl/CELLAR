@@ -54,7 +54,7 @@ TEST(DZN, Basic) {
     ASSERT_EQ(0, eap::mesh::FindDZN(dzn, 1, 1.0, point));
 
     // Outside of DZNs, nullopt is returned
-    ASSERT_EQ(nonstd::nullopt, eap::mesh::FindDZN(dzn, 1, 0.0, Coordinates<double>{3.0}));
+    ASSERT_EQ(std::nullopt, eap::mesh::FindDZN(dzn, 1, 0.0, Coordinates<double>{3.0}));
 }
 
 TEST(DZN, Circle) {
@@ -89,7 +89,7 @@ TEST(DZN, Circle) {
     Coordinates<double> const outer_point{-2.0, -1.5};
 
     // Inner circle not yet expanded - so no matching DZN for now.
-    ASSERT_EQ(nonstd::nullopt, eap::mesh::FindDZN(dzn, 2, 0.0, inner_point));
+    ASSERT_EQ(std::nullopt, eap::mesh::FindDZN(dzn, 2, 0.0, inner_point));
 
     // outer_point matches at time = 0.0
     ASSERT_EQ(OUTER_CIRCLE, eap::mesh::FindDZN(dzn, 2, 0.0, outer_point));

@@ -14,7 +14,7 @@ target_include_directories(eap-error PUBLIC include)
 target_link_libraries(
     eap-error
     PUBLIC
-        mpi-cpp nonstd::optional-lite nonstd::string_view-lite eap-kokkos)
+        mpi-cpp eap-kokkos)
 target_compile_features(eap-error PUBLIC cxx_std_14)
 target_compile_definitions(
     eap-error PUBLIC EAP_FILE_ROOT="${EAP_ERROR_ROOT_DIRECTORY}")

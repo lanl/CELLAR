@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
-#include <nonstd/optional.hpp>
+#include <optional>
 #include <perf-ffi-interop.hpp>
 #include <perf-registry.hpp>
 
@@ -32,7 +32,7 @@ void eap_perf_timer_registry_insert_or_lookup_timer_f(eap_perf_timer_registry_t 
                                                       size_t timer_name_length,
                                                       eap_perf_timer_handle_t *timer_handle) {
     *timer_handle = TimerHandleToFFI(TimerRegistryFromFFI(registry)->InsertOrLookupTimer(
-        nonstd::string_view(timer_name, timer_name_length)));
+        std::string_view(timer_name, timer_name_length)));
 }
 
 EXTERN_C
@@ -40,7 +40,7 @@ void eap_perf_timer_registry_insert_or_lookup_timer(eap_perf_timer_registry_t *r
                                                     char const *timer_name,
                                                     eap_perf_timer_handle_t *timer_handle) {
     *timer_handle = TimerHandleToFFI(
-        TimerRegistryFromFFI(registry)->InsertOrLookupTimer(nonstd::string_view(timer_name)));
+        TimerRegistryFromFFI(registry)->InsertOrLookupTimer(std::string_view(timer_name)));
 }
 
 EXTERN_C

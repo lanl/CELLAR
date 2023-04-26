@@ -76,7 +76,7 @@ int main() {
                   << ", count = " << timer.TimerCount() << ", sum_time = " << sum_time_ns.count()
                   << " ns";
 
-        if (nonstd::optional<DefaultClock::duration> const avg_time = timer.AverageTime()) {
+        if (std::optional<DefaultClock::duration> const avg_time = timer.AverageTime()) {
             auto const avg_time_ns = duration_cast<nanoseconds>(avg_time.value());
 
             std::cout << ", avg_time = " << avg_time_ns.count() << " ns";

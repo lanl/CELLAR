@@ -263,10 +263,10 @@ void Levels::SetupAllTop(Cells const &cells) {
 }
 
 void Levels::ReconMove(local_index_t data_length,
-                       nonstd::span<FortranLocalIndex const> send_start,
-                       nonstd::span<local_index_t const> send_length,
-                       nonstd::span<FortranLocalIndex const> recv_start,
-                       nonstd::span<local_index_t const> recv_length) {
+                       std::span<FortranLocalIndex const> send_start,
+                       std::span<local_index_t const> send_length,
+                       std::span<FortranLocalIndex const> recv_start,
+                       std::span<local_index_t const> recv_length) {
     using Kokkos::make_pair;
     using Kokkos::subview;
 

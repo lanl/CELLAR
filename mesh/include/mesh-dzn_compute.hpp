@@ -75,10 +75,10 @@ void ProcessCellsInDZNWithFilter(
  * @param filter
  *  A check on DZNs to decide whether it should be applied.
  * @return
- *  If an DZNs match, the index of the matching DZN. Otherwise nonstd::nullopt.
+ *  If an DZNs match, the index of the matching DZN. Otherwise std::nullopt.
  */
 template <typename FilterFn>
-nonstd::optional<eap::local_index_t> FindDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
+std::optional<eap::local_index_t> FindDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
                                                        std::uint8_t numdim,
                                                        double time,
                                                        Coordinates<double> test,
@@ -99,9 +99,9 @@ nonstd::optional<eap::local_index_t> FindDZNWithFilter(DefinedZoneResolutionInfo
  * @param test
  *  Point to check
  * @return
- *  If an DZNs match, the index of the matching DZN. Otherwise nonstd::nullopt.
+ *  If an DZNs match, the index of the matching DZN. Otherwise std::nullopt.
  */
-nonstd::optional<eap::local_index_t> FindDZN(DefinedZoneResolutionInfo const &dzn,
+std::optional<eap::local_index_t> FindDZN(DefinedZoneResolutionInfo const &dzn,
                                              std::uint8_t numdim,
                                              double time,
                                              Coordinates<double> test);
@@ -127,10 +127,10 @@ nonstd::optional<eap::local_index_t> FindDZN(DefinedZoneResolutionInfo const &dz
  * @param filter
  *  A check on DZNs to decide whether it should be applied.
  * @return
- *  If an DZNs match, a level. Otherwise nonstd::nullopt
+ *  If an DZNs match, a level. Otherwise std::nullopt
  */
 template <typename FilterFn>
-nonstd::optional<eap::local_index_t> SplitDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
+std::optional<eap::local_index_t> SplitDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
                                                         std::uint8_t numdim,
                                                         double time,
                                                         Coordinates<double> test,
@@ -155,9 +155,9 @@ nonstd::optional<eap::local_index_t> SplitDZNWithFilter(DefinedZoneResolutionInf
  * @param level_base
  *  The base level to add relative levels to
  * @return
- *  If an DZNs match, a level. Otherwise nonstd::nullopt
+ *  If an DZNs match, a level. Otherwise std::nullopt
  */
-nonstd::optional<eap::local_index_t> SplitDZN(DefinedZoneResolutionInfo const &dzn,
+std::optional<eap::local_index_t> SplitDZN(DefinedZoneResolutionInfo const &dzn,
                                               std::uint8_t numdim,
                                               double time,
                                               Coordinates<double> test,
@@ -183,9 +183,9 @@ nonstd::optional<eap::local_index_t> SplitDZN(DefinedZoneResolutionInfo const &d
  * @param level_base
  *  The base level to add relative levels to
  * @return
- *  If an DZNs match, a level. Otherwise nonstd::nullopt
+ *  If an DZNs match, a level. Otherwise std::nullopt
  */
-nonstd::optional<eap::local_index_t> SplitDZNFilterKode(DefinedZoneResolutionInfo const &dzn,
+std::optional<eap::local_index_t> SplitDZNFilterKode(DefinedZoneResolutionInfo const &dzn,
                                                         std::uint8_t numdim,
                                                         double time,
                                                         Kode kode,
@@ -357,7 +357,7 @@ void eap::mesh::ProcessCellsInDZNWithFilter(
 }
 
 template <typename FilterFn>
-nonstd::optional<eap::local_index_t>
+std::optional<eap::local_index_t>
 eap::mesh::FindDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
                              std::uint8_t numdim,
                              double time,
@@ -527,13 +527,13 @@ eap::mesh::FindDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
         }
     }
 
-    return nonstd::nullopt;
+    return std::nullopt;
 
     EE_DIAG_POST
 }
 
 template <typename FilterFn>
-nonstd::optional<eap::local_index_t>
+std::optional<eap::local_index_t>
 eap::mesh::SplitDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
                               std::uint8_t numdim,
                               double time,
@@ -556,7 +556,7 @@ eap::mesh::SplitDZNWithFilter(DefinedZoneResolutionInfo const &dzn,
         }
     }
 
-    return nonstd::nullopt;
+    return std::nullopt;
 }
 
 #endif // EAP_MESH_DZN_COMPUTE_HPP_

@@ -34,7 +34,7 @@ int main() {
     }
 
     // avg_time, min_time, and max_time return values only when there is at least one time sample.
-    if (nonstd::optional<steady_clock::duration> avg_time = timer.avg_time()) {
+    if (std::optional<steady_clock::duration> avg_time = timer.avg_time()) {
         // do something with avg_time
     }
 }
@@ -79,15 +79,6 @@ times. Equivalently, "zap timer" has a count of 0 because it's only used when
 another timer is already running.
 
 ## Dependencies
-### Public Dependencies
-These dependencies are always required, even if the supplied CMake build system
-is not used.
-
-| Package Name     | Spack Repo | Package Location                                |
-| ---------------- | ---------- | ----------------------------------------------- |
-| optional-lite    | builtin    | https://github.com/martinmoene/optional-lite    |
-| string-view-lite | builtin    | https://github.com/martinmoene/string-view-lite |
-
 ### Build Dependencies
 These dependencies are used by the supplied CMake build system to build the
 core library.

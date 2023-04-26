@@ -19,7 +19,7 @@
 // External includes
 #include <Kokkos_Core.hpp>
 #include <mpi/mpi.hpp>
-#include <nonstd/span.hpp>
+#include <span>
 
 // Internal package includes
 #include <error-macros.hpp>
@@ -232,12 +232,12 @@ std::vector<T> SomeToSome(mpi::Comm &comm,
  */
 template <typename T, typename = std::enable_if_t<mpi::is_datatype_v<T>>>
 void Move(mpi::Comm comm,
-          nonstd::span<FortranLocalIndex const> send_start,
-          nonstd::span<local_index_t const> send_length,
-          nonstd::span<T const> send_data,
-          nonstd::span<FortranLocalIndex const> recv_start,
-          nonstd::span<local_index_t const> recv_length,
-          nonstd::span<T> recv_data) {
+          std::span<FortranLocalIndex const> send_start,
+          std::span<local_index_t const> send_length,
+          std::span<T const> send_data,
+          std::span<FortranLocalIndex const> recv_start,
+          std::span<local_index_t const> recv_length,
+          std::span<T> recv_data) {
     using eap::utility::StringJoin;
     using mpi::rank_t;
 
@@ -254,7 +254,7 @@ void Move(mpi::Comm comm,
     EE_ASSERT_EQ(comm.size(), recv_length.size());
 #endif
 
-    EE_ASSERT(!(send_data.begin() < recv_data.end() && recv_data.begin() < send_data.end()),
+    EE_ASSERT(!(*send_data.begin() < *recv_data.end() && *recv_data.begin() < *send_data.end()),
               "recv_data must not overlap with send_data");
 
     rank_t const my_pe = comm.rank();
@@ -294,10 +294,10 @@ void Move(mpi::Comm comm,
 
     // Copy local buffers
     if (send_length[my_pe] > 0) {
-        nonstd::span<T const> const send_sub =
+        std::span<T const> const send_sub =
             send_data.subspan(send_start[my_pe], send_length[my_pe]);
 
-        nonstd::span<T> const recv_sub = recv_data.subspan(recv_start[my_pe], recv_length[my_pe]);
+        std::span<T> const recv_sub = recv_data.subspan(recv_start[my_pe], recv_length[my_pe]);
 
         std::copy(send_sub.begin(), send_sub.end(), recv_sub.begin());
     }

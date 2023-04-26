@@ -24,10 +24,10 @@ namespace eap {
 namespace mesh {
 class ReconMovePattern {
   public:
-    ReconMovePattern(nonstd::span<FortranLocalIndex const> send_start,
-                     nonstd::span<local_index_t const> send_length,
-                     nonstd::span<FortranLocalIndex const> recv_start,
-                     nonstd::span<local_index_t const> recv_length)
+    ReconMovePattern(std::span<FortranLocalIndex const> send_start,
+                     std::span<local_index_t const> send_length,
+                     std::span<FortranLocalIndex const> recv_start,
+                     std::span<local_index_t const> recv_length)
         : send_start_(send_start),
           send_length_(send_length),
           recv_start_(recv_start),
@@ -57,10 +57,10 @@ class ReconMovePattern {
     }
 
   private:
-    nonstd::span<FortranLocalIndex const> send_start_;
-    nonstd::span<local_index_t const> send_length_;
-    nonstd::span<FortranLocalIndex const> recv_start_;
-    nonstd::span<local_index_t const> recv_length_;
+    std::span<FortranLocalIndex const> send_start_;
+    std::span<local_index_t const> send_length_;
+    std::span<FortranLocalIndex const> recv_start_;
+    std::span<local_index_t const> recv_length_;
 };
 } // namespace mesh
 } // namespace eap

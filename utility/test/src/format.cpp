@@ -12,7 +12,7 @@
 
 // Third Party Includes
 #include <gtest/gtest.h>
-#include <nonstd/span.hpp>
+#include <span>
 
 // Internal Includes
 #include <utility-format.hpp>
@@ -24,7 +24,7 @@ TEST(Formatting, Strjoin) {
         ASSERT_EQ("3,2,1", StringJoin(nums, ","));
 
         // Verify it works with spans
-        nonstd::span<int const> nums_span = nums;
+        std::span<int const> nums_span = nums;
         ASSERT_EQ("3,2,1", StringJoin(nums_span, ","));
     }
 

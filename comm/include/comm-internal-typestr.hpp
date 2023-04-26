@@ -2,13 +2,12 @@
 #define EAP_COMM_INTERNAL_TYPESTR_HPP_
 
 #include <cstddef>
-
-#include <nonstd/string_view.hpp>
+#include <string_view>
 
 #define EAP_COMM_INTERNAL_SPECIALIZE_TYPETOSTR(TypeName)                                           \
     template <>                                                                                    \
     struct type_to_str<TypeName> {                                                                 \
-        constexpr static nonstd::string_view name() { return #TypeName; }                          \
+        constexpr static std::string_view name() { return #TypeName; }                          \
     }
 
 namespace eap {
@@ -16,7 +15,7 @@ namespace comm {
 namespace internal {
 template <typename T>
 struct type_to_str {
-    constexpr static nonstd::string_view name() { return "T"; }
+    constexpr static std::string_view name() { return "T"; }
 };
 
 EAP_COMM_INTERNAL_SPECIALIZE_TYPETOSTR(char);

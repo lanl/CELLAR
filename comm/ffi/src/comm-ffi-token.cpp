@@ -37,7 +37,6 @@ using eap::utility::kokkos::IsLayoutLeft;
 using eap::utility::kokkos::IsLayoutRight;
 using eap::utility::kokkos::Transpose;
 using eap::utility::kokkos::ViewFromNdarray;
-using nonstd::span;
 using std::shared_ptr;
 
 namespace {
@@ -258,7 +257,7 @@ EXTERN_C void comm_token_builder_flag_pes_f(comm_token_builder_t const *builder,
 
     TokenBuilderFromFFI(builder)->FlagPes(
         OptionalFortranGlobalAddressSpan(away_globals, away_globals_length),
-        nonstd::span<int>(pe_flags, pes_length));
+        std::span<int>(pe_flags, pes_length));
 
     EAP_EXTERN_POST
 }
@@ -338,7 +337,7 @@ EXTERN_C void comm_token_fill_home_arrays_f(comm_token_t const *token,
     EAP_EXTERN_PRE
 
         (*TokenFromFFI(token))
-            ->FillHomeArrays(span<int>(ranks, home_num),
+            ->FillHomeArrays(std::span<int>(ranks, home_num),
                              FortranLocalAddressSpan(los, home_num),
                              LocalAddressSpan(lengths, home_num),
                              FortranLocalAddressSpan(indices, home_size));

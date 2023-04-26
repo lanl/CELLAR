@@ -41,7 +41,7 @@ inline eap::perf::TimerHandle TimerHandleFromFFI(eap_perf_timer_handle_t const &
 }
 
 template <typename Duration>
-int64_t DurationToFFI(nonstd::optional<Duration> const &duration) {
+int64_t DurationToFFI(std::optional<Duration> const &duration) {
     if (duration) {
         return std::chrono::duration_cast<FFIDuration>(duration.value()).count();
     } else {

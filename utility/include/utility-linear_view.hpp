@@ -15,7 +15,7 @@
 
 // Third Party Includes
 #include <Kokkos_Core.hpp>
-#include <nonstd/span.hpp>
+#include <span>
 
 // Local Includes
 #include <utility-memory.hpp>
@@ -95,13 +95,13 @@ class LinearView {
      * @brief Returns a flat, immutable copy of the Kokkos::View. Does not cause the LinearView to
      * sync.
      *
-     * @return nonstd::span<T const> A flat view into the Kokkos::View
+     * @return std::span<T const> A flat view into the Kokkos::View
      */
-    nonstd::span<T const> Span() const {
+    std::span<T const> Span() const {
         if (flat_buffer_) {
-            return nonstd::span<T const>(flat_buffer_.get(), view_.extent(0));
+            return std::span<T const>(flat_buffer_.get(), view_.extent(0));
         } else {
-            return nonstd::span<T const>(view_.data(), view_.extent(0));
+            return std::span<T const>(view_.data(), view_.extent(0));
         }
     }
 
@@ -109,14 +109,14 @@ class LinearView {
      * @brief Returns a flat, mutable copy of the Kokkos::View. Causes LinearView to sync when it is
      * destroyed.
      *
-     * @return nonstd::span<T> Mutable, flat view into the Kokkos::View.
+     * @return std::span<T> Mutable, flat view into the Kokkos::View.
      */
-    nonstd::span<T> Span() {
+    std::span<T> Span() {
         needs_sync_ = true;
         if (flat_buffer_) {
-            return nonstd::span<T>(flat_buffer_.get(), view_.extent(0));
+            return std::span<T>(flat_buffer_.get(), view_.extent(0));
         } else {
-            return nonstd::span<T>(view_.data(), view_.extent(0));
+            return std::span<T>(view_.data(), view_.extent(0));
         }
     }
 

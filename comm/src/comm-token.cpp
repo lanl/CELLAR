@@ -39,7 +39,6 @@ using eap::utility::nullint;
 using eap::utility::OptionalInteger;
 using mpi::rank_t;
 using mpi::tag_t;
-using nonstd::span;
 using std::move;
 using std::ptrdiff_t;
 using std::size_t;
@@ -92,7 +91,7 @@ void internal::BuildGlobalBase(mpi::Comm comm,
     EE_CHECK(bases.resize(comm.size()),
              "Could not reserve space in bases for " << comm.size() << " elements");
 
-    comm.all_gather(num_local_cell, nonstd::span<uint32_t>(num_cells));
+    comm.all_gather(num_local_cell, std::span<uint32_t>(num_cells));
 
     Kokkos::
         View<uint32_t const *, Kokkos::LayoutLeft, eap::HostMemorySpace, Kokkos::MemoryUnmanaged>
@@ -124,9 +123,9 @@ internal::PeCellAddress internal::PeAndLocalAddress(vector<global_index_t> const
 
 internal::CopyFromTo
 internal::BuildCopyInfo(rank_t mype,
-                        nonstd::span<FortranLocalIndex const> home_addresses,
-                        nonstd::span<utility::NonNegativeInteger<mpi::rank_t> const> away_pe,
-                        nonstd::span<OptionalFortranLocalIndex const> away_address) {
+                        std::span<FortranLocalIndex const> home_addresses,
+                        std::span<utility::NonNegativeInteger<mpi::rank_t> const> away_pe,
+                        std::span<OptionalFortranLocalIndex const> away_address) {
     EE_PRELUDE
 
     assert(home_addresses.size() == away_address.size());
@@ -217,7 +216,7 @@ void TokenBuilder::SetNumCells(uint32_t num_local_cell) {
     num_cells_.clear();
 }
 
-void TokenBuilder::SetCellBases(nonstd::span<uint64_t const> bases) {
+void TokenBuilder::SetCellBases(std::span<uint64_t const> bases) {
     EE_PRELUDE
 
     EE_ASSERT_EQ(comm_.size(), bases.size());
@@ -258,9 +257,9 @@ void TokenBuilder::SetToAndFromPes(std::vector<int> &&to_pes, std::vector<int> &
     from_pes_ = std::move(from_pes);
 }
 
-void TokenBuilder::PesAndAddresses(nonstd::span<OptionalFortranGlobalIndex const> away_globals,
-                                   nonstd::span<utility::NonNegativeInteger<mpi::rank_t>> pes,
-                                   nonstd::span<OptionalFortranLocalIndex> addresses) const {
+void TokenBuilder::PesAndAddresses(std::span<OptionalFortranGlobalIndex const> away_globals,
+                                   std::span<utility::NonNegativeInteger<mpi::rank_t>> pes,
+                                   std::span<OptionalFortranLocalIndex> addresses) const {
     assert(away_globals.size() == pes.size());
     assert(away_globals.size() == addresses.size());
 
@@ -277,7 +276,7 @@ void TokenBuilder::PesAndAddresses(nonstd::span<OptionalFortranGlobalIndex const
     }
 }
 
-void TokenBuilder::PesAndAddresses(span<OptionalFortranGlobalIndex const> away_globals,
+void TokenBuilder::PesAndAddresses(std::span<OptionalFortranGlobalIndex const> away_globals,
                                    vector<NonNegativeInteger<mpi::rank_t>> &pes,
                                    vector<OptionalFortranLocalIndex> &addresses) const {
     EE_PRELUDE
@@ -290,13 +289,13 @@ void TokenBuilder::PesAndAddresses(span<OptionalFortranGlobalIndex const> away_g
                                          << ") too large - cannot allocate buffers");
     }
 
-    PesAndAddresses(span<OptionalFortranGlobalIndex const>(away_globals),
-                    span<NonNegativeInteger<rank_t>>(pes),
-                    span<OptionalFortranLocalIndex>(addresses));
+    PesAndAddresses(std::span<OptionalFortranGlobalIndex const>(away_globals),
+                    std::span<NonNegativeInteger<rank_t>>(pes),
+                    std::span<OptionalFortranLocalIndex>(addresses));
 }
 
-void TokenBuilder::FlagPes(nonstd::span<OptionalFortranGlobalIndex const> away_globals,
-                           nonstd::span<int> pe_flags) const {
+void TokenBuilder::FlagPes(std::span<OptionalFortranGlobalIndex const> away_globals,
+                           std::span<int> pe_flags) const {
     assert(pe_flags.size() == comm_.size());
     MARK_UNUSED(pe_flags.size());
 
@@ -310,8 +309,8 @@ void TokenBuilder::FlagPes(nonstd::span<OptionalFortranGlobalIndex const> away_g
     }
 }
 
-Token TokenBuilder::BuildGlobal(nonstd::span<FortranLocalIndex const> home_addresses,
-                                nonstd::span<OptionalFortranGlobalIndex const> away_global) {
+Token TokenBuilder::BuildGlobal(std::span<FortranLocalIndex const> home_addresses,
+                                std::span<OptionalFortranGlobalIndex const> away_global) {
     EAP_COMM_TIME_FUNCTION("eap::comm::TokenBuilder::BuildGlobal");
 
     EE_DIAG_PRE
@@ -329,9 +328,9 @@ Token TokenBuilder::BuildGlobal(nonstd::span<FortranLocalIndex const> home_addre
     EE_DIAG_POST
 }
 
-Token TokenBuilder::BuildLocal(span<FortranLocalIndex const> home_addresses,
-                               span<NonNegativeInteger<mpi::rank_t> const> away_pe,
-                               span<OptionalFortranLocalIndex const> away_address) {
+Token TokenBuilder::BuildLocal(std::span<FortranLocalIndex const> home_addresses,
+                               std::span<NonNegativeInteger<mpi::rank_t> const> away_pe,
+                               std::span<OptionalFortranLocalIndex const> away_address) {
     EAP_COMM_TIME_FUNCTION("eap::comm::TokenBuilder::BuildLocal");
 
     EE_DIAG_PRE
@@ -512,10 +511,10 @@ Token::Token(mpi::Comm comm,
       target_max_gs_receive_size_(target_max_gs_receive_size),
       require_rank_order_completion_(require_rank_order_completion) {}
 
-void Token::FillHomeArrays(nonstd::span<mpi::rank_t> ranks,
-                           nonstd::span<eap::utility::FortranIndex<local_index_t>> los,
-                           nonstd::span<local_index_t> lengths,
-                           nonstd::span<eap::utility::FortranIndex<local_index_t>> indices) const {
+void Token::FillHomeArrays(std::span<mpi::rank_t> ranks,
+                           std::span<eap::utility::FortranIndex<local_index_t>> los,
+                           std::span<local_index_t> lengths,
+                           std::span<eap::utility::FortranIndex<local_index_t>> indices) const {
     EE_DIAG_PRE
 
     EE_ASSERT((size_t)ranks.size() >= home_segments_.size());

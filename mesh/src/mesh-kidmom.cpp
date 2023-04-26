@@ -341,10 +341,10 @@ void KidMom::ResetMothersAndDaughtersNew(Cells const &cells, local_index_t new_c
     deep_copy(subview(cell_daughter_, make_pair(cells.num_local_cells(), new_cells)), nullint);
 }
 
-void KidMom::ReconMove(nonstd::span<FortranLocalIndex const> send_start,
-                       nonstd::span<local_index_t const> send_length,
-                       nonstd::span<FortranLocalIndex const> recv_start,
-                       nonstd::span<local_index_t const> recv_length) {
+void KidMom::ReconMove(std::span<FortranLocalIndex const> send_start,
+                       std::span<local_index_t const> send_length,
+                       std::span<FortranLocalIndex const> recv_start,
+                       std::span<local_index_t const> recv_length) {
     EE_DIAG_PRE
 
     ReconMovePattern pattern(send_start, send_length, recv_start, recv_length);

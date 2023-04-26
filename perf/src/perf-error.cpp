@@ -3,7 +3,7 @@
 #include <string>
 #include <utility>
 
-using nonstd::string_view;
+using std::string_view;
 using std::move;
 using std::string;
 using std::stringstream;

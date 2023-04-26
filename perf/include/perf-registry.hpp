@@ -19,7 +19,7 @@
 
 #include <iostream>
 #include <iterator>
-#include <nonstd/string_view.hpp>
+#include <string_view>
 #include <stack>
 #include <vector>
 
@@ -178,7 +178,7 @@ class TimerRegistry {
      * @return TimerHandle
      *  a handle to the Timer object managed by TimerRegistry
      */
-    TimerHandle InsertOrLookupTimer(nonstd::string_view timer_name) {
+    TimerHandle InsertOrLookupTimer(std::string_view timer_name) {
         auto const it = std::find_if(timers_.cbegin(), timers_.cend(), [&](auto const &timer) {
             return timer.first == timer_name;
         });
@@ -186,7 +186,7 @@ class TimerRegistry {
         if (it != timers_.cend()) {
             return TimerHandle(it - timers_.cbegin());
         } else {
-            timers_.push_back(std::make_pair(nonstd::to_string(timer_name), Timer<Clock>()));
+            timers_.push_back(std::make_pair(std::string(timer_name), Timer<Clock>()));
             return TimerHandle(timers_.size() - 1);
         }
     }
@@ -196,10 +196,10 @@ class TimerRegistry {
      *
      * @param index
      *  Handle to Timer in Registry. Behavior undefined if handle came from different TimerRegistry.
-     * @return nonstd::string_view
+     * @return std::string_view
      *  An immutable reference to the name of the timer associated with index
      */
-    nonstd::string_view GetTimerName(TimerHandle index) const {
+    std::string_view GetTimerName(TimerHandle index) const {
         return timers_[index.index_].first;
     }
 
@@ -309,7 +309,7 @@ class TimerRegistry {
      * @param timer_name
      *  Name of the timer to use
      */
-    TimedSection<Clock> TimeSection(nonstd::string_view timer_name) {
+    TimedSection<Clock> TimeSection(std::string_view timer_name) {
         return TimeSection(InsertOrLookupTimer(timer_name));
     }
 
@@ -320,7 +320,7 @@ class TimerRegistry {
      *  Example Usage:
      *  ```cpp
      *  for (auto handle : registry.Timers()) {
-     *      nonstd::string_view const name = registry.GetTimerName(handle);
+     *      std::string_view const name = registry.GetTimerName(handle);
      *      eap::perf::Timer const &timer = registry.GetTimer(handle);
      *  }
      *  ```

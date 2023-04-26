@@ -14,7 +14,7 @@ int main() {
     }
 
     // avg_time, min_time, and max_time return values only when there is at least one time sample.
-    if (nonstd::optional<steady_clock::duration> avg_time = timer.AverageTime()) {
+    if (std::optional<steady_clock::duration> avg_time = timer.AverageTime()) {
         // do something with avg_time
     }
 }

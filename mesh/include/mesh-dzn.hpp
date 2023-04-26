@@ -15,7 +15,7 @@
 
 // Third Party Includes
 #include <Kokkos_Core.hpp>
-#include <nonstd/optional.hpp>
+#include <optional>
 
 // Internal Includes
 #include <error-macros.hpp>
@@ -165,17 +165,17 @@ class ZoneOptionsDigits {
 
 struct NewDzn {
     ZoneOptionsDigits options;
-    nonstd::optional<local_diff_t> level;
-    nonstd::optional<local_index_t> material;
-    nonstd::optional<Kokkos::pair<double, double>> r;
-    nonstd::optional<Kokkos::pair<double, double>> rd;
-    nonstd::optional<Kokkos::pair<double, double>> x;
-    nonstd::optional<Kokkos::pair<double, double>> xd;
-    nonstd::optional<Kokkos::pair<double, double>> y;
-    nonstd::optional<Kokkos::pair<double, double>> yd;
-    nonstd::optional<Kokkos::pair<double, double>> z;
-    nonstd::optional<Kokkos::pair<double, double>> zd;
-    nonstd::optional<double> size;
+    std::optional<local_diff_t> level;
+    std::optional<local_index_t> material;
+    std::optional<Kokkos::pair<double, double>> r;
+    std::optional<Kokkos::pair<double, double>> rd;
+    std::optional<Kokkos::pair<double, double>> x;
+    std::optional<Kokkos::pair<double, double>> xd;
+    std::optional<Kokkos::pair<double, double>> y;
+    std::optional<Kokkos::pair<double, double>> yd;
+    std::optional<Kokkos::pair<double, double>> z;
+    std::optional<Kokkos::pair<double, double>> zd;
+    std::optional<double> size;
 };
 
 /**
