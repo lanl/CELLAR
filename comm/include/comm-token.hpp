@@ -203,7 +203,7 @@ class Token {
                      eap::HostMemorySpace>
             output_host = Convert1DTo2D(output);
 
-        GatherScatter<decltype(input_host), decltype(output_host), ValueType>(
+        GatherScatterNeigh<decltype(input_host), decltype(output_host), ValueType>(
             DoWhich::Gather, dowhat, input_host, output_host);
 
         EE_DIAG_POST_MSG("dowhat = " << (int)dowhat)
@@ -762,6 +762,8 @@ class Token {
 
   private:
     mpi::Comm comm_;
+    mpi::UniqueComm topo_comm;
+    mpi::UniqueComm topo_comm_flipped;
     std::size_t minimum_gather_size_ = 0;
     std::size_t minimum_scatter_size_ = 0;
     std::vector<std::size_t> zero_;
@@ -778,6 +780,8 @@ class Token {
     bool require_rank_order_completion_ = false;
 
     Token(mpi::Comm comm,
+          MPI_Comm topo_comm,
+          MPI_Comm topo_comm_flipped,
           std::size_t minimum_gather_size,
           std::size_t minimum_scatter_size,
           std::vector<std::size_t> &&zero,
@@ -836,6 +840,15 @@ class Token {
             return away_index_;
         } else {
             return home_index_;
+        }
+    }
+
+    MPI_Comm GetWhichComm(DoWhich dowhich) const
+    {
+        if (dowhich == DoWhich::Gather) {
+            return topo_comm.comm();
+        } else {
+            return topo_comm_flipped.comm();
         }
     }
 
@@ -1115,6 +1128,201 @@ class Token {
         }
 
         mpi::wait_all(send_requests);
+
+        EE_DIAG_POST_MSG("dowhich = " << (int)dowhich << ", dowhat = " << (int)dowhat)
+    }
+
+template <typename InputView,
+              typename OutputView,
+              typename ValueType = typename OutputView::non_const_value_type>
+    void GatherScatterNeigh(DoWhich dowhich,
+                            TokenOperation dowhat,
+                            InputView const &input,
+                            OutputView &output) {
+        using namespace comm::internal;
+
+        using Kokkos::ALL;
+        using mpi::UniqueRequest;
+        using std::size_t;
+        using std::vector;
+
+        using OutputType = typename OutputView::non_const_value_type;
+
+        EE_DIAG_PRE
+
+        EE_ASSERT_EQ(input.extent(1),
+                     output.extent(1),
+                     "Input (dims = (" << input.extent(0) << "," << input.extent(1)
+                                       << ")) and output (dims = (" << output.extent(0) << ","
+                                       << output.extent(1)
+                                       << ")) must have the same number of columns");
+
+        EE_ASSERT(dowhich == DoWhich::Gather || dowhich == DoWhich::Scatter,
+                  "The value of dowhich (" << (int)dowhich << ") is invalid.");
+
+        auto const row_size = input.extent(1);
+
+        auto const &copy_from = GetCopyFrom(dowhich);
+        auto const &copy_to = GetCopyTo(dowhich);
+        auto const &recv_segments = GetRecvSegments(dowhich);
+        auto const &recv_index = GetRecvIndex(dowhich);
+        auto const &send_segments = GetSendSegments(dowhich);
+        auto const &send_index = GetSendIndex(dowhich);
+        MPI_Comm comm_to_use = GetWhichComm(dowhich);
+
+        size_t send_scratch_size = 0;
+        for (auto &segment : send_segments) {
+            send_scratch_size += segment.length * row_size;
+        }
+
+        auto recv_scratch_tup = GetRecvScratch<ValueType>(row_size, recv_segments);
+        //auto const recv_scratch_size = recv_scratch_tup.first;
+        auto recv_scratch = std::move(recv_scratch_tup.second);
+
+        auto send_scratch =
+            EE_CHECK(std::unique_ptr<ValueType[]>(new ValueType[send_scratch_size]),
+                     "Could not allocate send_scratch array of size " << send_scratch_size);
+
+        std::vector<int> send_counts;
+        std::vector<int> send_displs;
+        {
+            auto current = 0;
+            for (auto &segment : send_segments) {
+                send_counts.push_back(segment.length);
+                send_displs.push_back(current);
+                for (size_t i = segment.begin; i < segment.begin + segment.length; i++) {
+                    for (size_t j = 0; j < row_size; j++) {
+                        send_scratch[current++] = input(send_index[i], j);
+                    }
+                }
+            }
+        }
+
+        std::vector<int> recv_counts;
+        std::vector<int> recv_displs;
+        {
+           auto current = 0;
+            for (auto &segment : recv_segments) {
+                recv_counts.push_back(segment.length);
+                recv_displs.push_back(current);
+                for (size_t i = segment.begin; i < segment.begin + segment.length; i++) {
+                    for (size_t j = 0; j < row_size; j++) {
+                        current++;
+                    }
+                }
+            } 
+        }
+
+        switch (dowhat) {
+        case TokenOperation::Copy:
+            if (dowhich == DoWhich::Gather) {
+                for (auto const &idx : zero_) {
+                    for (size_t j = 0; j < row_size; j++) {
+                        output(idx, j) = 0;
+                    }
+                }
+            }
+
+            for (size_t i = 0; i < copy_from.size(); i++) {
+                for (size_t j = 0; j < row_size; j++) {
+                    output(copy_to[i], j) = input(copy_from[i], j);
+                }
+            }
+            break;
+        case TokenOperation::Add:
+            for (size_t i = 0; i < copy_from.size(); i++) {
+                for (size_t j = 0; j < row_size; j++) {
+                    output(copy_to[i], j) += input(copy_from[i], j);
+                }
+            }
+            break;
+        case TokenOperation::Sub:
+            for (size_t i = 0; i < copy_from.size(); i++) {
+                for (size_t j = 0; j < row_size; j++) {
+                    output(copy_to[i], j) -= input(copy_from[i], j);
+                }
+            }
+            break;
+        case TokenOperation::Max:
+            for (size_t i = 0; i < copy_from.size(); i++) {
+                for (size_t j = 0; j < row_size; j++) {
+                    output(copy_to[i], j) = std::max(
+                        output(copy_to[i], j), static_cast<OutputType>(input(copy_from[i], j)));
+                }
+            }
+            break;
+        case TokenOperation::Min:
+            for (size_t i = 0; i < copy_from.size(); i++) {
+                for (size_t j = 0; j < row_size; j++) {
+                    output(copy_to[i], j) = std::min(
+                        output(copy_to[i], j), static_cast<OutputType>(input(copy_from[i], j)));
+                }
+            }
+            break;
+        }
+       
+        MPI_Neighbor_alltoallv(&send_scratch[0], send_counts.data(), send_displs.data(), mpi::DatatypeTraits<ValueType>::mpi_datatype(),
+                               &recv_scratch[0], recv_counts.data(), recv_displs.data(), mpi::DatatypeTraits<ValueType>::mpi_datatype(), comm_to_use);
+
+        auto recv_batch_begin = recv_segments.begin();
+        for(size_t idx = 0; idx < recv_segments.size(); idx++) {
+            auto const &segment = recv_batch_begin[idx];
+
+            auto recv_scratch_begin =
+                &recv_scratch[(segment.begin - recv_batch_begin->begin) * row_size];
+
+            switch (dowhat) {
+            case TokenOperation::Copy:
+                for (size_t i = 0; i < segment.length; i++) {
+                    auto const scratch = &recv_scratch_begin[i * row_size];
+
+                    for (size_t j = 0; j < row_size; j++) {
+                        output(recv_index[i + segment.begin], j) = scratch[j];
+                    }
+                }
+                break;
+            case TokenOperation::Add:
+                for (size_t i = 0; i < segment.length; i++) {
+                    auto const scratch = &recv_scratch_begin[i * row_size];
+
+                    for (size_t j = 0; j < row_size; j++) {
+                        output(recv_index[i + segment.begin], j) += scratch[j];
+                    }
+                }
+                break;
+            case TokenOperation::Sub:
+                for (size_t i = 0; i < segment.length; i++) {
+                    auto const scratch = &recv_scratch_begin[i * row_size];
+
+                    for (size_t j = 0; j < row_size; j++) {
+                        output(recv_index[i + segment.begin], j) -= scratch[j];
+                    }
+                }
+                break;
+            case TokenOperation::Max:
+                for (size_t i = 0; i < segment.length; i++) {
+                    auto const scratch = &recv_scratch_begin[i * row_size];
+
+                    for (size_t j = 0; j < row_size; j++) {
+                        output(recv_index[i + segment.begin], j) =
+                            std::max(output(recv_index[i + segment.begin], j),
+                                        static_cast<OutputType>(scratch[j]));
+                    }
+                }
+                break;
+            case TokenOperation::Min:
+                for (size_t i = 0; i < segment.length; i++) {
+                    auto const scratch = &recv_scratch_begin[i * row_size];
+
+                    for (size_t j = 0; j < row_size; j++) {
+                        output(recv_index[i + segment.begin], j) =
+                            std::min(output(recv_index[i + segment.begin], j),
+                                        static_cast<OutputType>(scratch[j]));
+                    }
+                }
+                break;
+            }
+        }
 
         EE_DIAG_POST_MSG("dowhich = " << (int)dowhich << ", dowhat = " << (int)dowhat)
     }

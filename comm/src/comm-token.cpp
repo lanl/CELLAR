@@ -467,7 +467,27 @@ Token TokenBuilder::BuildLocal(std::span<FortranLocalIndex const> home_addresses
             std::max(minimum_scatter_size, static_cast<size_t>(*max_remote_away_addr + 1));
     }
 
+    std::vector<int> send_procs;
+    std::vector<int> recv_procs;
+
+    for(size_t idx = 0; idx < away_segments.size(); idx++)
+        recv_procs.push_back(away_segments[idx].rank);
+
+    for(size_t idx = 0; idx < home_segments.size(); idx++)
+        send_procs.push_back(home_segments[idx].rank);
+
+    MPI_Comm new_comm;
+    MPI_Dist_graph_create_adjacent(comm_, recv_procs.size(), recv_procs.data(), MPI_UNWEIGHTED,
+                                   send_procs.size(), send_procs.data(), MPI_UNWEIGHTED,
+                                   MPI_INFO_NULL, false, &new_comm);
+    MPI_Comm new_comm_flipped;
+    MPI_Dist_graph_create_adjacent(comm_, send_procs.size(), send_procs.data(), MPI_UNWEIGHTED,
+                                   recv_procs.size(), recv_procs.data(), MPI_UNWEIGHTED,
+                                   MPI_INFO_NULL, false, &new_comm_flipped);
+
     return Token(comm_,
+                 new_comm,
+                 new_comm_flipped,
                  minimum_gather_size,
                  minimum_scatter_size,
                  move(copy_info.zero),
@@ -485,6 +505,8 @@ Token TokenBuilder::BuildLocal(std::span<FortranLocalIndex const> home_addresses
 }
 
 Token::Token(mpi::Comm comm,
+             MPI_Comm new_comm,
+             MPI_Comm new_comm_flipped,
              size_t minimum_gather_size,
              size_t minimum_scatter_size,
              vector<size_t> &&zero,
@@ -498,6 +520,8 @@ Token::Token(mpi::Comm comm,
              std::uint32_t target_max_gs_receive_size,
              bool require_rank_order_completion)
     : comm_(std::move(comm)),
+      topo_comm(mpi::UniqueComm::from_handle(new_comm)),
+      topo_comm_flipped(mpi::UniqueComm::from_handle(new_comm_flipped)),
       minimum_gather_size_(minimum_gather_size),
       minimum_scatter_size_(minimum_scatter_size),
       zero_(move(zero)),
