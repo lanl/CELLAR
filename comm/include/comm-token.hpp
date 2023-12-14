@@ -332,7 +332,7 @@ class Token {
                      eap::HostMemorySpace>
             output_host = output;
 
-        GatherScatter(DoWhich::Gather, dowhat, input_host, output_host);
+        GatherScatterNeigh(DoWhich::Gather, dowhat, input_host, output_host);
 
         EE_DIAG_POST_MSG("dowhat = " << (int)dowhat)
     }
@@ -511,7 +511,7 @@ class Token {
                      eap::HostMemorySpace>
             output_host = Convert1DTo2D(output);
 
-        GatherScatter(DoWhich::Scatter, dowhat, input_host, output_host);
+        GatherScatterNeigh(DoWhich::Scatter, dowhat, input_host, output_host);
 
         EE_DIAG_POST_MSG("dowhat = " << (int)dowhat)
     }
@@ -644,7 +644,7 @@ class Token {
                      eap::HostMemorySpace>
             output_host = output;
 
-        GatherScatter(DoWhich::Scatter, dowhat, input_host, output_host);
+        GatherScatterNeigh(DoWhich::Scatter, dowhat, input_host, output_host);
 
         EE_DIAG_POST_MSG("dowhat = " << (int)dowhat)
     }
@@ -1188,7 +1188,7 @@ template <typename InputView,
         {
             auto current = 0;
             for (auto &segment : send_segments) {
-                send_counts.push_back(segment.length);
+                send_counts.push_back(row_size * segment.length);
                 send_displs.push_back(current);
                 for (size_t i = segment.begin; i < segment.begin + segment.length; i++) {
                     for (size_t j = 0; j < row_size; j++) {
@@ -1203,15 +1203,13 @@ template <typename InputView,
         {
            auto current = 0;
             for (auto &segment : recv_segments) {
-                recv_counts.push_back(segment.length);
+                recv_counts.push_back(row_size * segment.length);
                 recv_displs.push_back(current);
-                for (size_t i = segment.begin; i < segment.begin + segment.length; i++) {
-                    for (size_t j = 0; j < row_size; j++) {
-                        current++;
-                    }
-                }
+                current += (row_size * segment.length);
             } 
         }
+
+        std::cout << "A" << row_size << std::endl;
 
         switch (dowhat) {
         case TokenOperation::Copy:

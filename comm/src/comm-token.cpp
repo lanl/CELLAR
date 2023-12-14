@@ -471,10 +471,10 @@ Token TokenBuilder::BuildLocal(std::span<FortranLocalIndex const> home_addresses
     std::vector<int> recv_procs;
 
     for(size_t idx = 0; idx < away_segments.size(); idx++)
-        recv_procs.push_back(away_segments[idx].rank);
+        send_procs.push_back(away_segments[idx].rank);
 
     for(size_t idx = 0; idx < home_segments.size(); idx++)
-        send_procs.push_back(home_segments[idx].rank);
+        recv_procs.push_back(home_segments[idx].rank);
 
     MPI_Comm new_comm;
     MPI_Dist_graph_create_adjacent(comm_, recv_procs.size(), recv_procs.data(), MPI_UNWEIGHTED,
