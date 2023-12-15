@@ -1209,8 +1209,6 @@ template <typename InputView,
             } 
         }
 
-        std::cout << "A" << row_size << std::endl;
-
         switch (dowhat) {
         case TokenOperation::Copy:
             if (dowhich == DoWhich::Gather) {
